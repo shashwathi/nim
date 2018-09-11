@@ -58,14 +58,50 @@ func main() {
 		fmt.Printf("\n Round %d, %d sticks at start, computer took %d, so %d sticks remains\n", i, heapS, r, (heapS - r))
 		// update the heap size
 		heapS = updatedHeapSize
+		// Player will choose the sticks
+		i++
+		playerChoice, err := readInput()
+		if err != nil {
+			fmt.Printf("\nError reading input: %v", err)
+			return
+		}
+
+		if playerChoice < heapS {
+			updatedHeapSize = heapS - playerChoice
+			fmt.Printf("\n Round %d, %d sticks at start, player took %d, so %d sticks remains\n", i, heapS, playerChoice, (heapS - playerChoice))
+			// update the heap size
+			heapS = updatedHeapSize
+		} else {
+			fmt.Printf("Error in player choice. Retry again")
+			return
+		}
 	}
 	// USe heap size to decide if computer / human won tge game.
-	if heapS == 1 {
-		fmt.Printf("\n Round %d, %d sticks at start, computer took %d, so %d sticks remains\n", i, heapS, 1, (heapS - 1))
+	if heapS >= 1 {
+		fmt.Printf("\n Round %d, %d sticks at start, computer took %d, so %d sticks remains\n", i, heapS, heapS, 0)
 		fmt.Println("\nComputer wins")
 	} else {
-		fmt.Printf("\n Round %d, %d sticks at start, computer took %d, so %d sticks remains\n", i, heapS, heapS, 0)
 		fmt.Println("\nHuman wins")
 	}
 	return
+}
+
+func readInput() (int, error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("\nPlayer pick sticks: ")
+	// Read from stdin
+	heapSize, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Printf("Error reading heap size: %v", err)
+		return 0, err
+	}
+	// Trim new line from input
+	heapSize = strings.TrimSuffix(heapSize, "\n")
+	// Convert the heao size to int
+	s, err := strconv.ParseInt(heapSize, 10, 64)
+	if err != nil {
+		fmt.Printf("Error reading heap size: %v", err)
+		return 0, nil
+	}
+	return int(s), nil
 }
